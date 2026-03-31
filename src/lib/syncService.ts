@@ -15,6 +15,10 @@ const TABLES_TO_SYNC = [
 export async function syncData() {
   console.log('Starting sync...');
   
+  if (!navigator.onLine) {
+    throw new Error('Tsy misy fifandraisana internet. Mba jereo ny data na ny wifi anao.');
+  }
+
   for (const table of TABLES_TO_SYNC) {
     try {
       // Get last sync time for this table
@@ -34,7 +38,13 @@ export async function syncData() {
       let data = initialData;
 
       if (initialError) {
-        if (initialError.message.includes('column "updated_at" does not exist')) {
+        // Rendre la détection plus flexible pour accepter "column updated_at does not exist" 
+        // ou "column verset.updated_at does not exist", etc.
+        const isMissingColumnError = 
+          initialError.message?.includes('updated_at') && 
+          initialError.message?.includes('does not exist');
+
+        if (isMissingColumnError) {
           console.warn(`Table ${table.name} doesn't have updated_at, performing full sync.`);
           const { data: fullData, error: fullError } = await supabase.from(table.name).select('*');
           if (fullError) throw fullError;
@@ -69,8 +79,12 @@ export async function syncData() {
           await db.syncLogs.add({ tableName: table.name, lastSyncAt: now });
         }
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(`Error syncing ${table.name}:`, err);
+      if (err.message?.includes('Failed to fetch') || err.status === 0) {
+        throw new Error('Tsy afaka nifandray tamin\'ny server. Mety ho lany ny data na ratsy ny fifandraisana.');
+      }
+      throw err;
     }
   }
   
@@ -87,6 +101,10 @@ export async function syncData() {
 }
 
 export async function resetLohahevitra() {
+  if (!navigator.onLine) {
+    throw new Error('Tsy misy fifandraisana internet. Mba jereo ny data na ny wifi anao alohan\'ny hamerenana ny angon-drakitra.');
+  }
+
   try {
     console.log('Resetting Lohahevitra data...');
     const tablesToClear = ['lohahevitra', 'lohahevitra_verset', 'lohahevitravolana', 'verset'];
@@ -112,8 +130,11 @@ export async function resetLohahevitra() {
     console.log('Reset complete. Starting fresh sync...');
     await syncData();
     console.log('Fresh sync after reset complete.');
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error during resetLohahevitra:', error);
+    if (error.message?.includes('Failed to fetch') || error.status === 0) {
+      throw new Error('Tsy afaka nifandray tamin\'ny server. Mety ho lany ny data na ratsy ny fifandraisana.');
+    }
     throw error;
   }
 }

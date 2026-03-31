@@ -26,7 +26,7 @@ export function EditFavoritePage() {
       const text = await navigator.clipboard.readText();
       setTonony(prev => prev + text);
     } catch (err) {
-      console.error('Failed to read clipboard', err);
+      console.warn('Clipboard access restricted. Use Ctrl+V instead.');
     }
   };
 
@@ -88,7 +88,8 @@ export function EditFavoritePage() {
             <label className="text-xs font-bold uppercase text-white/30 ml-1">Paroles</label>
             <button 
               onClick={handlePaste}
-              className="flex items-center gap-1 text-[10px] font-bold uppercase bg-primary/10 text-primary px-2 py-1 rounded-md"
+              className="flex items-center gap-1 text-[10px] font-bold uppercase bg-primary/10 text-primary px-2 py-1 rounded-md active:scale-95 transition-transform"
+              title="Coller depuis le presse-papier"
             >
               <Clipboard className="w-3 h-3" /> Coller
             </button>

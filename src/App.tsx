@@ -10,20 +10,41 @@ import { ProjectsPage } from './components/ProjectsPage';
 import { SettingsPage } from './components/SettingsPage';
 import { AddPersonalSong } from './components/AddPersonalSong';
 import { PersonalSongsPage } from './components/PersonalSongsPage';
+import { PersonalSongDetailPage } from './components/PersonalSongDetailPage';
 import { SundayThemes } from './components/SundayThemes';
 import { FavoritesPage } from './components/FavoritesPage';
 import { FavoriteDetailPage } from './components/FavoriteDetailPage';
 import { EditFavoritePage } from './components/EditFavoritePage';
 import { SplashScreen } from './components/SplashScreen';
+import { ErrorModal } from './components/ErrorModal';
 import { syncData } from './lib/syncService';
 import { checkUpcomingReminders } from './lib/notificationService';
 
 export default function App() {
   const [showSplash, setShowSplash] = useState(true);
+  const [errorInfo, setErrorInfo] = useState<{ title: string; message: string; type: 'connection' | 'sync' | 'generic' } | null>(null);
 
   useEffect(() => {
     // Initial sync on mount
-    syncData();
+    const initSync = async () => {
+      try {
+        await syncData();
+      } catch (err: any) {
+        console.error('Initial sync failed:', err);
+        // We don't necessarily show a modal on every app start failure to avoid annoying the user
+        // but we could show a subtle toast or just log it.
+        // For now, let's follow the user's request for "humble and clear" popups if sync fails.
+        if (err.message?.includes('internet')) {
+          setErrorInfo({
+            title: 'Tsy nandeha ny sync',
+            message: 'Tsy afaka nampifanindry ny angona izahay satria tsy misy internet. Afaka mampiasa ny app offline ianao.',
+            type: 'connection'
+          });
+        }
+      }
+    };
+
+    initSync();
     // Check for reminders
     checkUpcomingReminders();
   }, []);
@@ -42,6 +63,7 @@ export default function App() {
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/add-personal-song" element={<AddPersonalSong />} />
             <Route path="/personal-songs" element={<PersonalSongsPage />} />
+            <Route path="/personal-songs/:id" element={<PersonalSongDetailPage />} />
             <Route path="/sunday-themes" element={<SundayThemes />} />
             <Route path="/favorites" element={<FavoritesPage />} />
             <Route path="/favorite-detail/:id" element={<FavoriteDetailPage />} />
@@ -51,6 +73,15 @@ export default function App() {
           <BottomNav />
         </div>
       </Router>
+      
+      <ErrorModal
+        isOpen={!!errorInfo}
+        onClose={() => setErrorInfo(null)}
+        title={errorInfo?.title || ''}
+        message={errorInfo?.message || ''}
+        type={errorInfo?.type}
+        onRetry={errorInfo?.type === 'connection' ? () => syncData() : undefined}
+      />
     </ThemeProvider>
   );
 }

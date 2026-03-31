@@ -6,6 +6,8 @@ import { requestNotificationPermission, checkUpcomingReminders } from '@/src/lib
 import { motion } from 'motion/react';
 import { db } from '@/src/lib/db';
 import { Capacitor } from '@capacitor/core';
+import { ConfirmationModal } from './ConfirmationModal';
+import { ErrorModal } from './ErrorModal';
 
 export function SettingsPage() {
   const { theme, setTheme } = useTheme();
@@ -17,6 +19,7 @@ export function SettingsPage() {
   const [lastReset, setLastReset] = useState<number | null>(null);
 
   const [notifError, setNotifError] = useState<string | null>(null);
+  const [errorInfo, setErrorInfo] = useState<{ title: string; message: string; type: 'connection' | 'sync' | 'generic' } | null>(null);
 
   useEffect(() => {
     const checkPermission = async () => {
@@ -56,9 +59,18 @@ export function SettingsPage() {
 
   const handleSync = async () => {
     setIsSyncing(true);
-    await syncData();
-    await fetchLogs();
-    setIsSyncing(false);
+    try {
+      await syncData();
+      await fetchLogs();
+    } catch (err: any) {
+      setErrorInfo({
+        title: 'Tsy nandeha ny sync',
+        message: err.message || 'Nisy olana kely tamin\'ny fampitambarana ny angona.',
+        type: err.message?.includes('internet') ? 'connection' : 'sync'
+      });
+    } finally {
+      setIsSyncing(false);
+    }
   };
 
   const handleReset = async () => {
@@ -67,8 +79,13 @@ export function SettingsPage() {
       await resetLohahevitra();
       await fetchLogs();
       setShowResetConfirm(false);
-    } catch (error) {
-      console.error('Reset failed:', error);
+    } catch (err: any) {
+      console.error('Reset failed:', err);
+      setErrorInfo({
+        title: 'Tsy nandeha ny reset',
+        message: err.message || 'Nisy olana kely tamin\'ny famerenana ny angona.',
+        type: err.message?.includes('internet') ? 'connection' : 'sync'
+      });
     } finally {
       setIsResetting(false);
     }
@@ -223,39 +240,6 @@ export function SettingsPage() {
           </div>
         </section>
 
-        {/* Reset Confirmation Modal */}
-        {showResetConfirm && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => !isResetting && setShowResetConfirm(false)} />
-            <motion.div 
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              className="bg-bg-main border border-border-main p-6 rounded-3xl w-full max-w-xs relative z-10"
-            >
-              <h3 className="text-xl font-bold mb-2">Hamafa ve ?</h3>
-              <p className="text-text-main/60 text-sm mb-6">
-                Voulez-vous vraiment réinitialiser les données Lohahevitra ? Cela supprimera toutes les données locales et relancera une synchronisation.
-              </p>
-              <div className="flex gap-3">
-                <button 
-                  onClick={() => setShowResetConfirm(false)}
-                  disabled={isResetting}
-                  className="flex-1 py-3 rounded-xl bg-card-main font-bold active:scale-95 transition-transform disabled:opacity-50"
-                >
-                  Annuler
-                </button>
-                <button 
-                  onClick={handleReset}
-                  disabled={isResetting}
-                  className="flex-1 py-3 rounded-xl bg-red-500 font-bold active:scale-95 transition-transform disabled:opacity-50"
-                >
-                  {isResetting ? 'Fafana...' : 'Eny'}
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-
         {/* About */}
         <section>
           <h3 className="text-xs font-bold uppercase text-text-main/30 mb-3 ml-1">À propos</h3>
@@ -281,6 +265,26 @@ export function SettingsPage() {
           Déconnexion
         </button>
       </div>
+
+      <ConfirmationModal
+        isOpen={showResetConfirm}
+        onClose={() => !isResetting && setShowResetConfirm(false)}
+        onConfirm={handleReset}
+        title="Hamafa ve ?"
+        message="Voulez-vous vraiment réinitialiser les données Lohahevitra ? Cela supprimera toutes les données locales et relancera une synchronisation."
+        confirmText={isResetting ? 'Fafana...' : 'Eny'}
+        cancelText="Annuler"
+        isDestructive
+      />
+
+      <ErrorModal
+        isOpen={!!errorInfo}
+        onClose={() => setErrorInfo(null)}
+        title={errorInfo?.title || ''}
+        message={errorInfo?.message || ''}
+        type={errorInfo?.type}
+        onRetry={errorInfo?.type === 'connection' ? handleSync : undefined}
+      />
     </div>
   );
 }

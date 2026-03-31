@@ -4,12 +4,14 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/src/lib/db';
 import { ChevronLeft, Heart, Share2, Type, Check } from 'lucide-react';
 import { motion } from 'motion/react';
+import { ConfirmationModal } from './ConfirmationModal';
 
 export function SongDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [fontSize, setFontSize] = useState(16);
   const [showToast, setShowToast] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const song = useLiveQuery(async () => {
     if (!id) return null;
@@ -33,9 +35,7 @@ export function SongDetailPage() {
     const existing = await db.tononkiratiana.where('idtononkira').equals(song.idtononkira).first();
     
     if (existing) {
-      if (confirm('Miala tsiny indrindra, saingy azo antoka ve fa tianao hovafana tokoa ity hira ity amin\'ny lisitry ny tianao?')) {
-        await db.tononkiratiana.delete(existing.id!);
-      }
+      setIsDeleteModalOpen(true);
     } else {
       await db.tononkiratiana.add({
         titre: song.titre,
@@ -46,6 +46,14 @@ export function SongDetailPage() {
       });
       setShowToast(true);
       setTimeout(() => setShowToast(false), 2000);
+    }
+  };
+
+  const removeFavorite = async () => {
+    if (!song) return;
+    const existing = await db.tononkiratiana.where('idtononkira').equals(song.idtononkira).first();
+    if (existing) {
+      await db.tononkiratiana.delete(existing.id!);
     }
   };
 
@@ -97,6 +105,14 @@ export function SongDetailPage() {
           Ajouté aux favoris
         </div>
       )}
+
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={removeFavorite}
+        title="Esory amin'ny tiana?"
+        message="Miala tsiny indrindra, saingy azo antoka ve fa tianao hovafana tokoa ity hira ity amin'ny lisitry ny tianao?"
+      />
     </div>
   );
 }

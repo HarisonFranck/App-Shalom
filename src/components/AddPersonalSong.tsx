@@ -10,12 +10,28 @@ export function AddPersonalSong() {
   const [mpihira, setMpihira] = useState('');
   const [tonony, setTonony] = useState('');
 
+  const [showPasteError, setShowPasteError] = useState(false);
+
   const handlePaste = async () => {
     try {
+      // On demande explicitement la permission si possible
+      if (navigator.permissions && (navigator.permissions as any).query) {
+        const result = await (navigator.permissions as any).query({ name: 'clipboard-read' });
+        if (result.state === 'denied') {
+          setShowPasteError(true);
+          setTimeout(() => setShowPasteError(false), 3000);
+          return;
+        }
+      }
+
       const text = await navigator.clipboard.readText();
-      setTonony(prev => prev + text);
+      if (text) {
+        setTonony(prev => prev + (prev ? '\n' : '') + text);
+      }
     } catch (err) {
-      console.error('Failed to read clipboard', err);
+      console.warn('Clipboard access restricted:', err);
+      setShowPasteError(true);
+      setTimeout(() => setShowPasteError(false), 3000);
     }
   };
 
@@ -76,7 +92,8 @@ export function AddPersonalSong() {
             <label className="text-xs font-bold uppercase text-text-main/30 ml-1">Paroles</label>
             <button 
               onClick={handlePaste}
-              className="flex items-center gap-1 text-[10px] font-bold uppercase bg-primary/10 text-primary px-2 py-1 rounded-md"
+              className="flex items-center gap-1 text-[10px] font-bold uppercase bg-primary/10 text-primary px-2 py-1 rounded-md active:scale-95 transition-transform"
+              title="Coller depuis le presse-papier"
             >
               <Clipboard className="w-3 h-3" /> Coller
             </button>
@@ -87,6 +104,15 @@ export function AddPersonalSong() {
             value={tonony}
             onChange={(e) => setTonony(e.target.value)}
           />
+          {showPasteError && (
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="absolute bottom-4 left-4 right-4 bg-black/80 text-white text-[10px] py-2 px-3 rounded-lg text-center backdrop-blur-sm"
+            >
+              Accès refusé. Utilisez l'appui long pour coller.
+            </motion.div>
+          )}
         </div>
       </div>
     </div>

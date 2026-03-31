@@ -2,22 +2,22 @@ import React, { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/src/lib/db';
-import { ChevronLeft, Heart, Share2, Type, Edit2, Trash2 } from 'lucide-react';
+import { ChevronLeft, Share2, Type, Trash2, Music } from 'lucide-react';
 import { motion } from 'motion/react';
 import { ConfirmationModal } from './ConfirmationModal';
 
-export function FavoriteDetailPage() {
+export function PersonalSongDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [fontSize, setFontSize] = useState(16);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  const song = useLiveQuery(() => db.tononkiratiana.get(Number(id)), [id]);
+  const song = useLiveQuery(() => db.tononkiraako.get(Number(id)), [id]);
 
   const handleDelete = async () => {
     if (!id) return;
-    await db.tononkiratiana.delete(Number(id));
-    navigate('/favorites');
+    await db.tononkiraako.delete(Number(id));
+    navigate('/personal-songs');
   };
 
   if (!song) return (
@@ -36,9 +36,6 @@ export function FavoriteDetailPage() {
           <button onClick={() => setFontSize(s => Math.min(s + 2, 32))} className="p-2">
             <Type className="w-5 h-5" />
           </button>
-          <Link to={`/edit-favorite/${song.id}`} className="p-2">
-            <Edit2 className="w-5 h-5 text-text-main/40" />
-          </Link>
           <button onClick={() => setIsDeleteModalOpen(true)} className="p-2">
             <Trash2 className="w-5 h-5 text-red-500/50" />
           </button>
@@ -54,8 +51,8 @@ export function FavoriteDetailPage() {
         className="px-6 pt-8"
       >
         <div className="flex items-center gap-2 mb-2">
-          <Heart className="w-4 h-4 text-red-500 fill-red-500" />
-          <span className="text-[10px] font-bold uppercase text-text-main/30 tracking-widest">Hira tiana</span>
+          <Music className="w-4 h-4 text-primary" />
+          <span className="text-[10px] font-bold uppercase text-text-main/30 tracking-widest">Hira ako</span>
         </div>
         <h1 className="text-3xl font-black text-primary mb-2 leading-tight">{song.titre}</h1>
         <p className="text-lg text-text-main/60 mb-8 italic">{song.mpihira}</p>
@@ -72,8 +69,8 @@ export function FavoriteDetailPage() {
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleDelete}
-        title="Esory amin'ny tiana?"
-        message="Miala tsiny indrindra, saingy azo antoka ve fa tianao hovafana tokoa ity hira ity amin'ny lisitry ny tianao?"
+        title="Fafana ity hira ity?"
+        message="Miala tsiny indrindra, saingy azo antoka ve fa tianao hofafana tokoa ity hira ity amin'ny lisitry ny hira anao?"
       />
     </div>
   );
