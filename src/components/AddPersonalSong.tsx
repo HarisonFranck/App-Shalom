@@ -11,6 +11,7 @@ export function AddPersonalSong() {
   const [tonony, setTonony] = useState('');
 
   const [showPasteError, setShowPasteError] = useState(false);
+  const isPasteEnabled = localStorage.getItem('paste_enabled') === 'true';
 
   const handlePaste = async () => {
     try {
@@ -88,22 +89,25 @@ export function AddPersonalSong() {
         </div>
 
         <div className="space-y-2 relative">
-          <div className="flex justify-between items-center mb-2">
-            <label className="text-xs font-bold uppercase text-text-main/30 ml-1">Paroles</label>
-            <button 
-              onClick={handlePaste}
-              className="flex items-center gap-1 text-[10px] font-bold uppercase bg-primary/10 text-primary px-2 py-1 rounded-md active:scale-95 transition-transform"
-              title="Coller depuis le presse-papier"
-            >
-              <Clipboard className="w-3 h-3" /> Coller
-            </button>
+          <label className="text-xs font-bold uppercase text-text-main/30 ml-1">Paroles</label>
+          <div className="relative">
+            <textarea
+              placeholder="Saisissez ou collez les paroles ici..."
+              className="w-full bg-card-main border border-border-main rounded-xl py-4 px-4 outline-none focus:border-primary transition-colors min-h-[300px] resize-none"
+              value={tonony}
+              onChange={(e) => setTonony(e.target.value)}
+            />
+            {isPasteEnabled && (
+              <button 
+                onClick={handlePaste}
+                className="absolute top-3 right-3 p-2 bg-primary/10 text-primary rounded-lg active:scale-90 transition-transform flex items-center gap-2"
+                title="Coller depuis le presse-papier"
+              >
+                <Clipboard className="w-4 h-4" />
+                <span className="text-[10px] font-bold uppercase">Coller</span>
+              </button>
+            )}
           </div>
-          <textarea
-            placeholder="Saisissez ou collez les paroles ici..."
-            className="w-full bg-card-main border border-border-main rounded-xl py-4 px-4 outline-none focus:border-primary transition-colors min-h-[300px] resize-none"
-            value={tonony}
-            onChange={(e) => setTonony(e.target.value)}
-          />
           {showPasteError && (
             <motion.div 
               initial={{ opacity: 0, y: 10 }}

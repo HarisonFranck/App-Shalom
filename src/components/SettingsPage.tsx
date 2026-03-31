@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from './ThemeProvider';
-import { Moon, Sun, Monitor, RefreshCw, Info, Shield, LogOut, Bell, Trash2 } from 'lucide-react';
+import { Moon, Sun, Monitor, RefreshCw, Info, Shield, LogOut, Bell, Trash2, Clipboard } from 'lucide-react';
 import { syncData, resetLohahevitra } from '@/src/lib/syncService';
 import { requestNotificationPermission, checkUpcomingReminders } from '@/src/lib/notificationService';
 import { motion } from 'motion/react';
@@ -8,6 +8,7 @@ import { db } from '@/src/lib/db';
 import { Capacitor } from '@capacitor/core';
 import { ConfirmationModal } from './ConfirmationModal';
 import { ErrorModal } from './ErrorModal';
+import { cn } from '@/src/lib/utils';
 
 export function SettingsPage() {
   const { theme, setTheme } = useTheme();
@@ -17,9 +18,16 @@ export function SettingsPage() {
   const [notifPermission, setNotifPermission] = useState<NotificationPermission>('default');
   const [lastSync, setLastSync] = useState<number | null>(null);
   const [lastReset, setLastReset] = useState<number | null>(null);
+  const [isPasteEnabled, setIsPasteEnabled] = useState(() => {
+    return localStorage.getItem('paste_enabled') === 'true';
+  });
 
   const [notifError, setNotifError] = useState<string | null>(null);
   const [errorInfo, setErrorInfo] = useState<{ title: string; message: string; type: 'connection' | 'sync' | 'generic' } | null>(null);
+
+  useEffect(() => {
+    localStorage.setItem('paste_enabled', isPasteEnabled.toString());
+  }, [isPasteEnabled]);
 
   useEffect(() => {
     const checkPermission = async () => {
@@ -193,6 +201,34 @@ export function SettingsPage() {
                 Activer
               </button>
             )}
+          </div>
+        </section>
+
+        {/* Fonctionnalités */}
+        <section>
+          <h3 className="text-xs font-bold uppercase text-text-main/30 mb-3 ml-1">Fonctionnalités</h3>
+          <div className="bg-card-main rounded-2xl border border-border-main p-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                <Clipboard className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <p className="font-medium">Bouton "Coller"</p>
+                <p className="text-xs text-text-main/40">Activer le bouton de collage automatique</p>
+              </div>
+            </div>
+            <button 
+              onClick={() => setIsPasteEnabled(!isPasteEnabled)}
+              className={cn(
+                "w-12 h-6 rounded-full relative transition-colors duration-200 ease-in-out",
+                isPasteEnabled ? "bg-primary" : "bg-text-main/10"
+              )}
+            >
+              <div className={cn(
+                "absolute top-1 w-4 h-4 rounded-full bg-white transition-all duration-200 ease-in-out",
+                isPasteEnabled ? "left-7" : "left-1"
+              )} />
+            </button>
           </div>
         </section>
 

@@ -12,6 +12,7 @@ export function EditFavoritePage() {
   const [titre, setTitre] = useState('');
   const [mpihira, setMpihira] = useState('');
   const [tonony, setTonony] = useState('');
+  const isPasteEnabled = localStorage.getItem('paste_enabled') === 'true';
 
   useEffect(() => {
     if (favorite) {
@@ -24,9 +25,11 @@ export function EditFavoritePage() {
   const handlePaste = async () => {
     try {
       const text = await navigator.clipboard.readText();
-      setTonony(prev => prev + text);
+      if (text) {
+        setTonony(prev => prev + (prev ? '\n' : '') + text);
+      }
     } catch (err) {
-      console.warn('Clipboard access restricted. Use Ctrl+V instead.');
+      console.warn('Clipboard access restricted. Use long press to paste.');
     }
   };
 
@@ -45,8 +48,8 @@ export function EditFavoritePage() {
   if (!favorite) return null;
 
   return (
-    <div className="min-h-screen bg-secondary pb-10">
-      <header className="sticky top-0 bg-secondary/80 backdrop-blur-md z-10 px-4 py-4 flex items-center justify-between border-b border-white/5">
+    <div className="min-h-screen bg-bg-main pb-10">
+      <header className="sticky top-0 bg-bg-main/80 backdrop-blur-md z-10 px-4 py-4 flex items-center justify-between border-b border-border-main">
         <button onClick={() => navigate(-1)} className="p-2 -ml-2">
           <ChevronLeft className="w-6 h-6" />
         </button>
@@ -62,44 +65,47 @@ export function EditFavoritePage() {
 
       <div className="p-6 space-y-6">
         <div className="space-y-2">
-          <label className="text-xs font-bold uppercase text-white/30 ml-1">Titre</label>
+          <label className="text-xs font-bold uppercase text-text-main/30 ml-1">Titre</label>
           <input
             type="text"
             placeholder="Titre de la chanson"
-            className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 outline-none focus:border-primary transition-colors"
+            className="w-full bg-card-main border border-border-main rounded-xl py-3 px-4 outline-none focus:border-primary transition-colors"
             value={titre}
             onChange={(e) => setTitre(e.target.value)}
           />
         </div>
 
         <div className="space-y-2">
-          <label className="text-xs font-bold uppercase text-white/30 ml-1">Mpihira (Chanteur)</label>
+          <label className="text-xs font-bold uppercase text-text-main/30 ml-1">Mpihira (Chanteur)</label>
           <input
             type="text"
             placeholder="Nom de l'interprète"
-            className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 outline-none focus:border-primary transition-colors"
+            className="w-full bg-card-main border border-border-main rounded-xl py-3 px-4 outline-none focus:border-primary transition-colors"
             value={mpihira}
             onChange={(e) => setMpihira(e.target.value)}
           />
         </div>
 
         <div className="space-y-2 relative">
-          <div className="flex justify-between items-center mb-2">
-            <label className="text-xs font-bold uppercase text-white/30 ml-1">Paroles</label>
-            <button 
-              onClick={handlePaste}
-              className="flex items-center gap-1 text-[10px] font-bold uppercase bg-primary/10 text-primary px-2 py-1 rounded-md active:scale-95 transition-transform"
-              title="Coller depuis le presse-papier"
-            >
-              <Clipboard className="w-3 h-3" /> Coller
-            </button>
+          <label className="text-xs font-bold uppercase text-text-main/30 ml-1">Paroles</label>
+          <div className="relative">
+            <textarea
+              placeholder="Saisissez ou collez les paroles ici..."
+              className="w-full bg-card-main border border-border-main rounded-xl py-4 px-4 outline-none focus:border-primary transition-colors min-h-[300px] resize-none"
+              value={tonony}
+              onChange={(e) => setTonony(e.target.value)}
+            />
+            {isPasteEnabled && (
+              <button 
+                onClick={handlePaste}
+                className="absolute top-3 right-3 p-2 bg-primary/10 text-primary rounded-lg active:scale-90 transition-transform flex items-center gap-2"
+                title="Coller depuis le presse-papier"
+              >
+                <Clipboard className="w-4 h-4" />
+                <span className="text-[10px] font-bold uppercase">Coller</span>
+              </button>
+            )}
           </div>
-          <textarea
-            placeholder="Saisissez ou collez les paroles ici..."
-            className="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-4 outline-none focus:border-primary transition-colors min-h-[300px] resize-none"
-            value={tonony}
-            onChange={(e) => setTonony(e.target.value)}
-          />
         </div>
       </div>
     </div>

@@ -22,6 +22,9 @@ export function SongsPage() {
     [search]
   );
 
+  const favorites = useLiveQuery(() => db.tononkiratiana.toArray());
+  const favoriteIds = new Set(favorites?.map(f => String(f.idtononkira)) || []);
+
   return (
     <div className="pb-20 px-4 pt-6">
       <header className="mb-6">
@@ -55,7 +58,7 @@ export function SongsPage() {
                 <h3 className="font-bold truncate">{song.titre}</h3>
                 <p className="text-sm text-text-main/50 truncate">{song.mpihira}</p>
               </div>
-              {song.tiana && <Heart className="w-5 h-5 text-red-500 fill-red-500" />}
+              {favoriteIds.has(String(song.idtononkira)) && <Heart className="w-5 h-5 text-red-500 fill-red-500" />}
             </Link>
           </motion.div>
         ))}

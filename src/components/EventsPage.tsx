@@ -1,20 +1,30 @@
 import React, { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/src/lib/db';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, addMonths, subMonths } from 'date-fns';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, addMonths, subMonths, startOfWeek, endOfWeek, startOfDay } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight, MapPin, Clock } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 
 export function EventsPage() {
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState(() => startOfDay(new Date()));
   const events = useLiveQuery(() => db.evenement.toArray());
 
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
-  const days = eachDayOfInterval({ start: monthStart, end: monthEnd });
+  
+  // Get the start of the week for the first day of the month (Monday start)
+  const calendarStart = startOfWeek(monthStart, { weekStartsOn: 1 });
+  // Get the end of the week for the last day of the month
+  const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 1 });
+
+  const calendarDays = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
 
   const selectedDayEvents = events?.filter(e => isSameDay(new Date(e.date_debut), currentDate)) || [];
+
+  const handleDayClick = (day: Date) => {
+    setCurrentDate(startOfDay(day));
+  };
 
   return (
     <div className="pb-20 px-4 pt-6">
@@ -36,18 +46,20 @@ export function EventsPage() {
         {['L', 'M', 'M', 'J', 'V', 'S', 'D'].map((d, i) => (
           <div key={i} className="text-center text-[10px] font-bold text-text-main/30 uppercase">{d}</div>
         ))}
-        {days.map((day) => {
+        {calendarDays.map((day) => {
           const hasEvent = events?.some(e => isSameDay(new Date(e.date_debut), day));
           const isSelected = isSameDay(day, currentDate);
+          const isCurrentMonth = day.getMonth() === monthStart.getMonth();
           
           return (
             <button
               key={day.toString()}
-              onClick={() => setCurrentDate(day)}
+              onClick={() => handleDayClick(day)}
               className={cn(
                 "aspect-square rounded-xl flex flex-col items-center justify-center relative transition-all",
                 isSelected ? "bg-primary text-[#212121] font-bold" : "bg-card-main text-text-main/80",
-                !isSelected && hasEvent && "border border-primary/30"
+                !isSelected && hasEvent && "border border-primary/30",
+                !isCurrentMonth && "opacity-20"
               )}
             >
               <span>{format(day, 'd')}</span>

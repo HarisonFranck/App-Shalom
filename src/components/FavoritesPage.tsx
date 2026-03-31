@@ -1,22 +1,32 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/src/lib/db';
 import { Heart, Trash2, Edit2, ChevronLeft, Music } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
+import { ConfirmationModal } from './ConfirmationModal';
 
 export function FavoritesPage() {
   const navigate = useNavigate();
   const favorites = useLiveQuery(() => db.tononkiratiana.toArray());
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
 
-  const handleDelete = async (id: number) => {
-    if (confirm('Miala tsiny indrindra, saingy azo antoka ve fa tianao hovafana tokoa ity hira ity amin\'ny lisitry ny tianao?')) {
-      await db.tononkiratiana.delete(id);
+  const handleDelete = (id: number) => {
+    setSelectedId(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (selectedId !== null) {
+      await db.tononkiratiana.delete(selectedId);
+      setIsDeleteModalOpen(false);
+      setSelectedId(null);
     }
   };
 
   return (
-    <div className="min-h-screen bg-secondary pb-20 px-4 pt-6">
+    <div className="min-h-screen bg-bg-main pb-20 px-4 pt-6">
       <header className="flex items-center gap-4 mb-6">
         <button onClick={() => navigate(-1)} className="p-2 -ml-2">
           <ChevronLeft className="w-6 h-6" />
@@ -26,18 +36,18 @@ export function FavoritesPage() {
 
       <div className="space-y-3">
         {favorites?.map((song) => (
-          <div key={song.id} className="bg-white/5 rounded-xl border border-white/10 flex items-center p-4 gap-4">
+          <div key={song.id} className="bg-card-main rounded-xl border border-border-main flex items-center p-4 gap-4">
             <Link to={`/favorite-detail/${song.id}`} className="flex-1 flex items-center gap-4 min-w-0">
               <div className="w-10 h-10 bg-red-500/10 rounded-lg flex items-center justify-center shrink-0">
                 <Heart className="text-red-500 w-5 h-5 fill-red-500" />
               </div>
               <div className="flex-1 min-w-0">
                 <h3 className="font-bold truncate">{song.titre}</h3>
-                <p className="text-xs text-white/50 truncate">{song.mpihira}</p>
+                <p className="text-xs text-text-main/50 truncate">{song.mpihira}</p>
               </div>
             </Link>
             <div className="flex items-center gap-1">
-              <Link to={`/edit-favorite/${song.id}`} className="p-2 text-white/40 hover:text-primary">
+              <Link to={`/edit-favorite/${song.id}`} className="p-2 text-text-main/40 hover:text-primary">
                 <Edit2 className="w-4 h-4" />
               </Link>
               <button 
@@ -52,14 +62,23 @@ export function FavoritesPage() {
 
         {favorites?.length === 0 && (
           <div className="text-center py-20">
-            <Heart className="w-12 h-12 text-white/10 mx-auto mb-4" />
-            <p className="text-white/50">Votre liste de favoris est vide</p>
+            <Heart className="w-12 h-12 text-text-main/10 mx-auto mb-4" />
+            <p className="text-text-main/50">Votre liste de favoris est vide</p>
             <Link to="/songs" className="inline-block mt-4 text-primary font-bold">
               Découvrir des chansons
             </Link>
           </div>
         )}
       </div>
+
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={confirmDelete}
+        title="Esory amin'ny tiana?"
+        message="Miala tsiny indrindra, saingy azo antoka ve fa tianao hovafana tokoa ity hira ity amin'ny lisitry ny tianao?"
+        isDestructive={true}
+      />
     </div>
   );
 }
