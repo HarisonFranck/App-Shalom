@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './components/ThemeProvider';
 import { BottomNav } from './components/BottomNav';
@@ -14,10 +14,13 @@ import { SundayThemes } from './components/SundayThemes';
 import { FavoritesPage } from './components/FavoritesPage';
 import { FavoriteDetailPage } from './components/FavoriteDetailPage';
 import { EditFavoritePage } from './components/EditFavoritePage';
+import { SplashScreen } from './components/SplashScreen';
 import { syncData } from './lib/syncService';
 import { checkUpcomingReminders } from './lib/notificationService';
 
 export default function App() {
+  const [showSplash, setShowSplash] = useState(true);
+
   useEffect(() => {
     // Initial sync on mount
     syncData();
@@ -27,6 +30,7 @@ export default function App() {
 
   return (
     <ThemeProvider>
+      {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
       <Router>
         <div className="min-h-screen bg-bg-main text-text-main pb-20 max-w-md mx-auto relative shadow-2xl shadow-black/50 overflow-x-hidden">
           <Routes>

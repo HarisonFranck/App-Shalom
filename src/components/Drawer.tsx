@@ -43,10 +43,19 @@ export function Drawer({ isOpen, onClose }: DrawerProps) {
             <div className="p-6 flex flex-col h-full">
               <div className="flex justify-between items-center mb-8">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
-                    <Music className="text-[#212121] w-6 h-6" />
+                  <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center overflow-hidden">
+                    <img 
+                      src="/logo.png" 
+                      alt="Logo" 
+                      className="w-full h-full object-contain"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        e.currentTarget.parentElement!.innerHTML = '<div class="text-primary font-black text-xl">S</div>';
+                      }}
+                      referrerPolicy="no-referrer"
+                    />
                   </div>
-                  <h2 className="text-xl font-black text-text-main">Shalom App</h2>
+                  <h2 className="text-xl font-black text-text-main tracking-tighter">Shalom App</h2>
                 </div>
                 <button onClick={onClose} className="p-2 bg-card-main rounded-lg">
                   <X className="w-5 h-5" />

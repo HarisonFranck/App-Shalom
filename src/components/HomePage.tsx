@@ -120,10 +120,19 @@ export function HomePage() {
       {/* Top Header */}
       <header className="px-4 py-4 flex justify-between items-center bg-bg-main/80 backdrop-blur-md sticky top-0 z-40">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-            <Music className="text-[#212121] w-5 h-5" />
+          <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center overflow-hidden">
+            <img 
+              src="/logo.png" 
+              alt="Logo" 
+              className="w-full h-full object-contain"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+                e.currentTarget.parentElement!.innerHTML = '<div class="text-primary font-black">S</div>';
+              }}
+              referrerPolicy="no-referrer"
+            />
           </div>
-          <h1 className="text-lg font-black">SHALOM</h1>
+          <h1 className="text-lg font-black tracking-tighter">SHALOM</h1>
         </div>
         <button 
           onClick={() => setIsDrawerOpen(true)}
