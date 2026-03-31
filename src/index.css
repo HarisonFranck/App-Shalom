@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #ffd700;
+  --color-primary: var(--primary-color);
   --color-bg-main: var(--bg-color);
   --color-text-main: var(--text-color);
   --color-card-main: var(--card-bg);
@@ -11,17 +11,21 @@
 }
 
 :root {
-  --bg-color: #ffffff;
-  --text-color: #212121;
-  --card-bg: rgba(33, 33, 33, 0.05);
-  --border-color: rgba(33, 33, 33, 0.1);
+  /* Thème Light - Gris clair pour faire ressortir le jaune #FFD700 */
+  --bg-color: #E5E7EB; /* Gris clair (Gray 200) pour un meilleur contraste avec le jaune */
+  --text-color: #1A1A1A;
+  --card-bg: #F3F4F6;
+  --border-color: rgba(0, 0, 0, 0.1);
+  --primary-color: #FFD700;
 }
 
 .dark {
-  --bg-color: #212121;
-  --text-color: #ffffff;
-  --card-bg: rgba(255, 255, 255, 0.05);
+  /* Thème Sombre - Anthracite #212121 */
+  --bg-color: #212121; 
+  --text-color: #FFFFFF;
+  --card-bg: #2D2D2D; /* Un gris légèrement plus clair pour les cartes */
   --border-color: rgba(255, 255, 255, 0.1);
+  --primary-color: #FFD700;
 }
 
 @layer base {
@@ -29,6 +33,20 @@
     background-color: var(--bg-color);
     color: var(--text-color);
     @apply antialiased transition-colors duration-300;
+  }
+
+  /* Lisibilité du texte jaune #FFD700 sur fond clair et sombre */
+  .text-primary {
+    color: var(--primary-color);
+    /* Contour noir pour une lisibilité parfaite sur le gris clair du mode Light */
+    text-shadow: 
+      -1px -1px 0 #000,  
+       1px -1px 0 #000,
+      -1px  1px 0 #000,
+       1px  1px 0 #000,
+       0 2px 4px rgba(0,0,0,0.3);
+    font-weight: 900;
+    letter-spacing: 0.02em;
   }
 }
 

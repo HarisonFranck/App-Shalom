@@ -171,7 +171,7 @@ export function SettingsPage() {
             {notifPermission !== 'granted' && (
               <button 
                 onClick={handleEnableNotifications}
-                className="bg-primary text-secondary px-4 py-2 rounded-xl font-bold text-sm active:scale-95 transition-transform"
+                className="bg-primary text-[#212121] px-4 py-2 rounded-xl font-bold text-sm active:scale-95 transition-transform"
               >
                 Activer
               </button>
@@ -196,7 +196,7 @@ export function SettingsPage() {
               <button 
                 onClick={handleSync}
                 disabled={isSyncing}
-                className="bg-primary text-secondary px-4 py-2 rounded-xl font-bold text-sm active:scale-95 transition-transform disabled:opacity-50"
+                className="bg-primary text-[#212121] px-4 py-2 rounded-xl font-bold text-sm active:scale-95 transition-transform disabled:opacity-50"
               >
                 {isSyncing ? 'En cours...' : 'Sync'}
               </button>
