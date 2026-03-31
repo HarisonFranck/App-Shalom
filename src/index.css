@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #ffd700;
+  --color-secondary: #212121;
+  --color-accent: #ffd700;
+  
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  --bg-color: #ffffff;
+  --text-color: #212121;
+  --card-bg: rgba(33, 33, 33, 0.05);
+  --border-color: rgba(33, 33, 33, 0.1);
+}
+
+.dark {
+  --bg-color: #212121;
+  --text-color: #ffffff;
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --border-color: rgba(255, 255, 255, 0.1);
+}
+
+@layer base {
+  body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    @apply antialiased transition-colors duration-300;
+  }
+}
+
+/* Utility classes for the new theme system */
+@utility bg-secondary {
+  background-color: var(--bg-color);
+}
+
+@utility text-white {
+  color: var(--text-color);
+}
+
+@utility bg-white\/5 {
+  background-color: var(--card-bg);
+}
+
+@utility border-white\/10 {
+  border-color: var(--border-color);
+}
+
+@utility border-white\/5 {
+  border-color: var(--border-color);
+}
+
+/* Slick Carousel Styles */
+@import "slick-carousel/slick/slick.css";
+@import "slick-carousel/slick/slick-theme.css";

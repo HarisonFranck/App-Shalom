@@ -1,0 +1,8 @@
+{
+  "name": "Shalom App",
+  "description": "Application mobile pour la chorale Shalom : paroles de chansons, événements et projets communautaires.",
+  "requestFramePermissions": [
+    "geolocation",
+    "notifications"
+  ]
+}
