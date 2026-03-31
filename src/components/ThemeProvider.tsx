@@ -16,16 +16,28 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const root = window.document.documentElement;
+    console.log('Current theme:', theme);
     root.classList.remove('light', 'dark');
 
+    let appliedTheme: 'light' | 'dark';
     if (theme === 'system') {
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      root.classList.add(systemTheme);
+      appliedTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     } else {
-      root.classList.add(theme);
+      appliedTheme = theme;
     }
 
+    console.log('Applying theme class:', appliedTheme);
+    root.classList.add(appliedTheme);
     localStorage.setItem('theme', theme);
+
+    // Update theme-color meta tag for Android/Capacitor
+    let metaThemeColor = document.querySelector('meta[name="theme-color"]');
+    if (!metaThemeColor) {
+      metaThemeColor = document.createElement('meta');
+      (metaThemeColor as any).name = 'theme-color';
+      document.head.appendChild(metaThemeColor);
+    }
+    metaThemeColor.setAttribute('content', appliedTheme === 'dark' ? '#212121' : '#ffffff');
   }, [theme]);
 
   return (

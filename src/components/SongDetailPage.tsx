@@ -50,14 +50,14 @@ export function SongDetailPage() {
   };
 
   if (!song) return (
-    <div className="min-h-screen bg-secondary flex items-center justify-center">
+    <div className="min-h-screen bg-bg-main flex items-center justify-center">
       <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-primary"></div>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-secondary pb-10">
-      <header className="sticky top-0 bg-secondary/80 backdrop-blur-md z-10 px-4 py-4 flex items-center justify-between border-b border-white/5">
+    <div className="min-h-screen bg-bg-main pb-10">
+      <header className="sticky top-0 bg-bg-main/80 backdrop-blur-md z-10 px-4 py-4 flex items-center justify-between border-b border-border-main">
         <button onClick={() => navigate(-1)} className="p-2 -ml-2">
           <ChevronLeft className="w-6 h-6" />
         </button>
@@ -66,7 +66,7 @@ export function SongDetailPage() {
             <Type className="w-5 h-5" />
           </button>
           <button onClick={toggleFavorite} className="p-2">
-            <Heart className={`w-5 h-5 transition-colors ${isFavorite ? 'text-red-500 fill-red-500' : 'text-white/40'}`} />
+            <Heart className={`w-5 h-5 transition-colors ${isFavorite ? 'text-red-500 fill-red-500' : 'text-text-main/40'}`} />
           </button>
           <button className="p-2">
             <Share2 className="w-5 h-5" />
@@ -80,7 +80,7 @@ export function SongDetailPage() {
         className="px-6 pt-8"
       >
         <h1 className="text-3xl font-black text-primary mb-2 leading-tight">{song.titre}</h1>
-        <p className="text-lg text-white/60 mb-8 italic">{song.mpihira}</p>
+        <p className="text-lg text-text-main/60 mb-8 italic">{song.mpihira}</p>
         
         <div 
           className="whitespace-pre-wrap leading-relaxed font-medium"
@@ -92,7 +92,7 @@ export function SongDetailPage() {
 
       {/* Toast */}
       {showToast && (
-        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-primary text-secondary px-6 py-3 rounded-full font-bold flex items-center gap-2 shadow-2xl z-50">
+        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-primary text-[#212121] px-6 py-3 rounded-full font-bold flex items-center gap-2 shadow-2xl z-50">
           <Check className="w-5 h-5" />
           Ajouté aux favoris
         </div>

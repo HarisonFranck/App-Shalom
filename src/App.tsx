@@ -28,7 +28,7 @@ export default function App() {
   return (
     <ThemeProvider>
       <Router>
-        <div className="min-h-screen bg-secondary text-white pb-20 max-w-md mx-auto relative shadow-2xl shadow-black/50 overflow-x-hidden">
+        <div className="min-h-screen bg-bg-main text-text-main pb-20 max-w-md mx-auto relative shadow-2xl shadow-black/50 overflow-x-hidden">
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/songs" element={<SongsPage />} />

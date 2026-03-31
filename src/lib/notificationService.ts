@@ -1,7 +1,25 @@
 import { db } from './db';
 import { isAfter, isBefore, addDays, startOfDay, parseISO } from 'date-fns';
+import { LocalNotifications } from '@capacitor/local-notifications';
+import { Capacitor } from '@capacitor/core';
+
+const isNative = Capacitor.isNativePlatform();
 
 export async function requestNotificationPermission() {
+  if (isNative) {
+    try {
+      const status = await LocalNotifications.requestPermissions();
+      if (status.display === 'granted') {
+        showNotification('Fampandrenesana mavitrika!', 'Hahazo fampandrenesana ianao rehefa misy hetsika manakaiky.');
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Error requesting Capacitor notification permission:', error);
+      return false;
+    }
+  }
+
   if (!('Notification' in window)) {
     console.log('This browser does not support desktop notification');
     return false;
@@ -39,7 +57,12 @@ export async function requestNotificationPermission() {
 }
 
 export async function checkUpcomingReminders() {
-  if (Notification.permission !== 'granted') return;
+  if (isNative) {
+    const status = await LocalNotifications.checkPermissions();
+    if (status.display !== 'granted') return;
+  } else {
+    if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  }
 
   const now = new Date();
   const tomorrow = startOfDay(addDays(now, 1));
@@ -86,9 +109,31 @@ export async function checkUpcomingReminders() {
 }
 
 async function showNotification(title: string, body: string) {
-  if (Notification.permission !== 'granted') return;
+  if (isNative) {
+    try {
+      await LocalNotifications.schedule({
+        notifications: [
+          {
+            title,
+            body,
+            id: Math.floor(Math.random() * 1000000),
+            schedule: { at: new Date(Date.now() + 1000) },
+            sound: 'default',
+            attachments: [],
+            actionTypeId: '',
+            extra: null
+          }
+        ]
+      });
+      return;
+    } catch (error) {
+      console.error('Error showing Capacitor notification:', error);
+    }
+  }
+
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
   
-  const options: NotificationOptions = {
+  const options: any = {
     body,
     icon: '/favicon.ico',
     badge: '/favicon.ico',

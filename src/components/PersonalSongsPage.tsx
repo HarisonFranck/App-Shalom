@@ -16,7 +16,7 @@ export function PersonalSongsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-secondary pb-20 px-4 pt-6">
+    <div className="min-h-screen bg-bg-main pb-20 px-4 pt-6">
       <header className="flex items-center gap-4 mb-6">
         <button onClick={() => navigate(-1)} className="p-2 -ml-2">
           <ChevronLeft className="w-6 h-6" />
@@ -26,13 +26,13 @@ export function PersonalSongsPage() {
 
       <div className="space-y-3">
         {songs?.map((song) => (
-          <div key={song.id} className="bg-white/5 rounded-xl border border-white/10 flex items-center p-4 gap-4">
+          <div key={song.id} className="bg-card-main rounded-xl border border-border-main flex items-center p-4 gap-4">
             <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
               <Music className="text-primary w-5 h-5" />
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="font-bold truncate">{song.titre}</h3>
-              <p className="text-xs text-white/50 truncate">{song.mpihira}</p>
+              <p className="text-xs text-text-main/50 truncate">{song.mpihira}</p>
             </div>
             <button 
               onClick={() => handleDelete(song.id!)}
@@ -45,8 +45,8 @@ export function PersonalSongsPage() {
 
         {songs?.length === 0 && (
           <div className="text-center py-20">
-            <Music className="w-12 h-12 text-white/10 mx-auto mb-4" />
-            <p className="text-white/50">Vous n'avez pas encore ajouté de chansons personnelles</p>
+            <Music className="w-12 h-12 text-text-main/10 mx-auto mb-4" />
+            <p className="text-text-main/50">Vous n'avez pas encore ajouté de chansons personnelles</p>
             <Link to="/add-personal-song" className="inline-block mt-4 text-primary font-bold">
               Ajouter ma première chanson
             </Link>

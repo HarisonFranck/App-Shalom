@@ -14,7 +14,7 @@ export function ProjectsPage() {
       
       <div className="space-y-6">
         {projects?.map((project) => (
-          <div key={project.idprojet} className="bg-white/5 rounded-2xl border border-white/10 overflow-hidden">
+          <div key={project.idprojet} className="bg-card-main rounded-2xl border border-border-main overflow-hidden">
             {project.image && (
               <img 
                 src={project.image} 
@@ -25,14 +25,14 @@ export function ProjectsPage() {
             )}
             <div className="p-5">
               <h3 className="text-xl font-bold text-primary mb-3">{project.nom}</h3>
-              <p className="text-white/70 text-sm mb-4 line-clamp-3">{project.description}</p>
+              <p className="text-text-main/70 text-sm mb-4 line-clamp-3">{project.description}</p>
               
-              <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/5">
-                <div className="flex items-center gap-2 text-xs text-white/40">
+              <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border-main">
+                <div className="flex items-center gap-2 text-xs text-text-main/40">
                   <Calendar className="w-4 h-4" />
                   <span>{format(new Date(project.date_debut), 'MMM yyyy', { locale: fr })}</span>
                 </div>
-                <div className="flex items-center gap-2 text-xs text-white/40">
+                <div className="flex items-center gap-2 text-xs text-text-main/40">
                   <Users className="w-4 h-4" />
                   <span>{project.participant}</span>
                 </div>
@@ -43,8 +43,8 @@ export function ProjectsPage() {
 
         {(!projects || projects.length === 0) && (
           <div className="text-center py-20">
-            <Briefcase className="w-12 h-12 text-white/10 mx-auto mb-4" />
-            <p className="text-white/50">Aucun projet en cours</p>
+            <Briefcase className="w-12 h-12 text-text-main/10 mx-auto mb-4" />
+            <p className="text-text-main/50">Aucun projet en cours</p>
           </div>
         )}
       </div>

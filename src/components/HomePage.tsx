@@ -118,16 +118,16 @@ export function HomePage() {
       <Drawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
       
       {/* Top Header */}
-      <header className="px-4 py-4 flex justify-between items-center bg-secondary/80 backdrop-blur-md sticky top-0 z-40">
+      <header className="px-4 py-4 flex justify-between items-center bg-bg-main/80 backdrop-blur-md sticky top-0 z-40">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-            <Music className="text-secondary w-5 h-5" />
+            <Music className="text-[#212121] w-5 h-5" />
           </div>
           <h1 className="text-lg font-black">SHALOM</h1>
         </div>
         <button 
           onClick={() => setIsDrawerOpen(true)}
-          className="p-2 bg-white/5 rounded-lg active:scale-90 transition-transform"
+          className="p-2 bg-card-main rounded-lg active:scale-90 transition-transform"
         >
           <Menu className="w-6 h-6" />
         </button>
@@ -138,7 +138,7 @@ export function HomePage() {
         <Slider {...sliderSettings} className="rounded-3xl overflow-hidden shadow-2xl">
           {dynamicSlides.map((slide, i) => (
             <div key={i} className="relative h-64 outline-none">
-              <div className={cn("absolute inset-0 flex flex-col justify-center p-8 text-secondary transition-colors duration-500", slide.color || "bg-primary")}>
+              <div className={cn("absolute inset-0 flex flex-col justify-center p-8 text-[#212121] transition-colors duration-500", slide.color || "bg-primary")}>
                 <Quote className="w-12 h-12 opacity-10 absolute top-4 right-4" />
                 <div className="flex items-center gap-2 mb-2">
                   {slide.type === "Fampandrenesana" && <Bell className="w-3 h-3" />}
@@ -156,13 +156,13 @@ export function HomePage() {
       <div className="px-4 space-y-8">
         {/* Quick Actions */}
         <section className="grid grid-cols-2 gap-4">
-          <Link to="/songs" className="bg-white/5 p-4 rounded-2xl border border-white/10 flex flex-col items-center text-center space-y-2 active:scale-95 transition-transform">
+          <Link to="/songs" className="bg-card-main p-4 rounded-2xl border border-border-main flex flex-col items-center text-center space-y-2 active:scale-95 transition-transform">
             <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center">
               <Music className="text-primary w-6 h-6" />
             </div>
             <span className="font-semibold">Chansons</span>
           </Link>
-          <Link to="/events" className="bg-white/5 p-4 rounded-2xl border border-white/10 flex flex-col items-center text-center space-y-2 active:scale-95 transition-transform">
+          <Link to="/events" className="bg-card-main p-4 rounded-2xl border border-border-main flex flex-col items-center text-center space-y-2 active:scale-95 transition-transform">
             <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center">
               <Calendar className="text-primary w-6 h-6" />
             </div>
@@ -184,11 +184,11 @@ export function HomePage() {
                 key={song.idtononkira}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white/5 p-4 rounded-xl border border-white/10 flex justify-between items-center"
+                className="bg-card-main p-4 rounded-xl border border-border-main flex justify-between items-center"
               >
                 <div>
                   <h4 className="font-medium line-clamp-1">{song.titre}</h4>
-                  <p className="text-xs text-white/50">{song.mpihira}</p>
+                  <p className="text-xs text-text-main/50">{song.mpihira}</p>
                 </div>
                 <Link to={`/songs/${song.idtononkira}`} className="p-2 bg-primary/10 rounded-lg">
                   <Music className="w-4 h-4 text-primary" />
@@ -196,7 +196,7 @@ export function HomePage() {
               </motion.div>
             ))}
             {(!recentSongs || recentSongs.length === 0) && (
-              <p className="text-white/30 text-center py-4 italic">Aucune chanson synchronisée</p>
+              <p className="text-text-main/30 text-center py-4 italic">Aucune chanson synchronisée</p>
             )}
           </div>
         </section>
@@ -218,12 +218,12 @@ export function HomePage() {
                 </div>
                 <div className="flex-1">
                   <h4 className="font-semibold line-clamp-1">{event.nom}</h4>
-                  <p className="text-xs text-white/50 line-clamp-2">{event.description}</p>
+                  <p className="text-xs text-text-main/50 line-clamp-2">{event.description}</p>
                 </div>
               </div>
             ))}
             {(!upcomingEvents || upcomingEvents.length === 0) && (
-              <p className="text-white/30 text-center py-4 italic">Aucun événement à venir</p>
+              <p className="text-text-main/30 text-center py-4 italic">Aucun événement à venir</p>
             )}
           </div>
         </section>

@@ -13,7 +13,7 @@ const navItems = [
 
 export function BottomNav() {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-secondary border-t border-white/10 pb-safe z-50">
+    <nav className="fixed bottom-0 left-0 right-0 bg-bg-main border-t border-border-main pb-safe z-50">
       <div className="flex justify-around items-center h-16 max-w-md mx-auto">
         {navItems.map((item) => (
           <NavLink
@@ -22,7 +22,7 @@ export function BottomNav() {
             className={({ isActive }) =>
               cn(
                 "flex flex-col items-center justify-center w-full h-full transition-colors",
-                isActive ? "text-primary" : "text-white/50"
+                isActive ? "text-primary" : "text-text-main/50"
               )
             }
           >

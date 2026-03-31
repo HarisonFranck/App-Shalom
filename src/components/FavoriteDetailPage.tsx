@@ -21,14 +21,14 @@ export function FavoriteDetailPage() {
   };
 
   if (!song) return (
-    <div className="min-h-screen bg-secondary flex items-center justify-center">
+    <div className="min-h-screen bg-bg-main flex items-center justify-center">
       <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-primary"></div>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-secondary pb-10">
-      <header className="sticky top-0 bg-secondary/80 backdrop-blur-md z-10 px-4 py-4 flex items-center justify-between border-b border-white/5">
+    <div className="min-h-screen bg-bg-main pb-10">
+      <header className="sticky top-0 bg-bg-main/80 backdrop-blur-md z-10 px-4 py-4 flex items-center justify-between border-b border-border-main">
         <button onClick={() => navigate(-1)} className="p-2 -ml-2">
           <ChevronLeft className="w-6 h-6" />
         </button>
@@ -37,7 +37,7 @@ export function FavoriteDetailPage() {
             <Type className="w-5 h-5" />
           </button>
           <Link to={`/edit-favorite/${song.id}`} className="p-2">
-            <Edit2 className="w-5 h-5 text-white/40" />
+            <Edit2 className="w-5 h-5 text-text-main/40" />
           </Link>
           <button onClick={handleDelete} className="p-2">
             <Trash2 className="w-5 h-5 text-red-500/50" />
@@ -55,10 +55,10 @@ export function FavoriteDetailPage() {
       >
         <div className="flex items-center gap-2 mb-2">
           <Heart className="w-4 h-4 text-red-500 fill-red-500" />
-          <span className="text-[10px] font-bold uppercase text-white/30 tracking-widest">Hira tiana</span>
+          <span className="text-[10px] font-bold uppercase text-text-main/30 tracking-widest">Hira tiana</span>
         </div>
         <h1 className="text-3xl font-black text-primary mb-2 leading-tight">{song.titre}</h1>
-        <p className="text-lg text-white/60 mb-8 italic">{song.mpihira}</p>
+        <p className="text-lg text-text-main/60 mb-8 italic">{song.mpihira}</p>
         
         <div 
           className="whitespace-pre-wrap leading-relaxed font-medium"

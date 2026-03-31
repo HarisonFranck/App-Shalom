@@ -5,6 +5,7 @@ import { syncData, resetLohahevitra } from '@/src/lib/syncService';
 import { requestNotificationPermission, checkUpcomingReminders } from '@/src/lib/notificationService';
 import { motion } from 'motion/react';
 import { db } from '@/src/lib/db';
+import { Capacitor } from '@capacitor/core';
 
 export function SettingsPage() {
   const { theme, setTheme } = useTheme();
@@ -18,11 +19,20 @@ export function SettingsPage() {
   const [notifError, setNotifError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!('Notification' in window)) {
-      setNotifError("Navigateur non supporté");
-    } else {
-      setNotifPermission(Notification.permission);
-    }
+    const checkPermission = async () => {
+      const isNative = Capacitor.isNativePlatform();
+      if (isNative) {
+        const { LocalNotifications } = await import('@capacitor/local-notifications');
+        const status = await LocalNotifications.checkPermissions();
+        setNotifPermission(status.display === 'granted' ? 'granted' : status.display === 'denied' ? 'denied' : 'default');
+      } else if (!('Notification' in window)) {
+        setNotifError("Navigateur non supporté");
+      } else {
+        setNotifPermission(Notification.permission);
+      }
+    };
+    
+    checkPermission();
     fetchLogs();
   }, []);
 
@@ -68,13 +78,15 @@ export function SettingsPage() {
     console.log('Requesting notification permission...');
     setNotifError(null);
     
-    if (!('Notification' in window)) {
+    const isNative = Capacitor.isNativePlatform();
+    
+    if (!isNative && !('Notification' in window)) {
       console.warn('Notifications not supported in this browser');
       setNotifError("Navigateur non supporté");
       return;
     }
 
-    if (Notification.permission === 'denied') {
+    if (!isNative && Notification.permission === 'denied') {
       console.warn('Notification permission already denied');
       setNotifError("Notifications bloquées");
       return;
@@ -84,16 +96,22 @@ export function SettingsPage() {
       const granted = await requestNotificationPermission();
       console.log('Permission result:', granted);
       
-      // Small delay to ensure Notification.permission is updated
+      // Small delay to ensure permission is updated
       await new Promise(resolve => setTimeout(resolve, 100));
       
       // Update state based on actual current permission
-      setNotifPermission(Notification.permission);
+      if (isNative) {
+        const { LocalNotifications } = await import('@capacitor/local-notifications');
+        const status = await LocalNotifications.checkPermissions();
+        setNotifPermission(status.display === 'granted' ? 'granted' : status.display === 'denied' ? 'denied' : 'default');
+      } else {
+        setNotifPermission(Notification.permission);
+      }
       
       if (granted) {
         checkUpcomingReminders();
       } else {
-        if ((Notification.permission as string) === 'denied') {
+        if (!isNative && (Notification.permission as string) === 'denied') {
           setNotifError("Notifications bloquées");
         } else {
           setNotifError("Permission refusée");
@@ -112,8 +130,8 @@ export function SettingsPage() {
       <div className="space-y-6">
         {/* Appearance */}
         <section>
-          <h3 className="text-xs font-bold uppercase text-white/30 mb-3 ml-1">Apparence</h3>
-          <div className="bg-white/5 rounded-2xl border border-white/10 overflow-hidden">
+          <h3 className="text-xs font-bold uppercase text-text-main/30 mb-3 ml-1">Apparence</h3>
+          <div className="bg-card-main rounded-2xl border border-border-main overflow-hidden">
             <div className="flex p-1">
               {[
                 { id: 'light', icon: Sun, label: 'Clair' },
@@ -124,7 +142,7 @@ export function SettingsPage() {
                   key={item.id}
                   onClick={() => setTheme(item.id as any)}
                   className={`flex-1 flex flex-col items-center py-3 rounded-xl transition-all ${
-                    theme === item.id ? 'bg-primary text-secondary font-bold' : 'text-white/50'
+                    theme === item.id ? 'bg-primary text-[#212121] font-bold' : 'text-text-main/50'
                   }`}
                 >
                   <item.icon className="w-5 h-5 mb-1" />
@@ -137,15 +155,15 @@ export function SettingsPage() {
 
         {/* Notifications */}
         <section>
-          <h3 className="text-xs font-bold uppercase text-white/30 mb-3 ml-1">Notifications</h3>
-          <div className="bg-white/5 rounded-2xl border border-white/10 p-4 flex items-center justify-between">
+          <h3 className="text-xs font-bold uppercase text-text-main/30 mb-3 ml-1">Notifications</h3>
+          <div className="bg-card-main rounded-2xl border border-border-main p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
                 <Bell className="w-5 h-5 text-primary" />
               </div>
               <div>
                 <p className="font-medium">Rappels d'événements</p>
-                <p className={`text-xs ${notifError ? 'text-red-400' : 'text-white/40'}`}>
+                <p className={`text-xs ${notifError ? 'text-red-400' : 'text-text-main/40'}`}>
                   {notifError || (notifPermission === 'granted' ? 'Activées' : notifPermission === 'denied' ? 'Bloquées' : 'Désactivées')}
                 </p>
               </div>
@@ -163,16 +181,16 @@ export function SettingsPage() {
 
         {/* Sync */}
         <section>
-          <h3 className="text-xs font-bold uppercase text-white/30 mb-3 ml-1">Données</h3>
+          <h3 className="text-xs font-bold uppercase text-text-main/30 mb-3 ml-1">Données</h3>
           <div className="space-y-3">
-            <div className="bg-white/5 rounded-2xl border border-white/10 p-4 flex items-center justify-between">
+            <div className="bg-card-main rounded-2xl border border-border-main p-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
                   <RefreshCw className={`w-5 h-5 text-primary ${isSyncing ? 'animate-spin' : ''}`} />
                 </div>
                 <div>
                   <p className="font-medium">Synchronisation</p>
-                  <p className="text-xs text-white/40">Dernière sync : {formatDate(lastSync)}</p>
+                  <p className="text-xs text-text-main/40">Dernière sync : {formatDate(lastSync)}</p>
                 </div>
               </div>
               <button 
@@ -184,14 +202,14 @@ export function SettingsPage() {
               </button>
             </div>
 
-            <div className="bg-white/5 rounded-2xl border border-white/10 p-4 flex items-center justify-between">
+            <div className="bg-card-main rounded-2xl border border-border-main p-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-red-500/10 rounded-full flex items-center justify-center">
                   <Trash2 className="w-5 h-5 text-red-500" />
                 </div>
                 <div>
                   <p className="font-medium">Réinitialiser Lohahevitra</p>
-                  <p className="text-xs text-white/40">Dernier reset : {formatDate(lastReset)}</p>
+                  <p className="text-xs text-text-main/40">Dernier reset : {formatDate(lastReset)}</p>
                 </div>
               </div>
               <button 
@@ -212,17 +230,17 @@ export function SettingsPage() {
             <motion.div 
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="bg-secondary border border-white/10 p-6 rounded-3xl w-full max-w-xs relative z-10"
+              className="bg-bg-main border border-border-main p-6 rounded-3xl w-full max-w-xs relative z-10"
             >
               <h3 className="text-xl font-bold mb-2">Hamafa ve ?</h3>
-              <p className="text-white/60 text-sm mb-6">
+              <p className="text-text-main/60 text-sm mb-6">
                 Voulez-vous vraiment réinitialiser les données Lohahevitra ? Cela supprimera toutes les données locales et relancera une synchronisation.
               </p>
               <div className="flex gap-3">
                 <button 
                   onClick={() => setShowResetConfirm(false)}
                   disabled={isResetting}
-                  className="flex-1 py-3 rounded-xl bg-white/5 font-bold active:scale-95 transition-transform disabled:opacity-50"
+                  className="flex-1 py-3 rounded-xl bg-card-main font-bold active:scale-95 transition-transform disabled:opacity-50"
                 >
                   Annuler
                 </button>
@@ -240,18 +258,18 @@ export function SettingsPage() {
 
         {/* About */}
         <section>
-          <h3 className="text-xs font-bold uppercase text-white/30 mb-3 ml-1">À propos</h3>
-          <div className="bg-white/5 rounded-2xl border border-white/10 divide-y divide-white/5">
-            <button className="w-full flex items-center justify-between p-4 active:bg-white/5 transition-colors">
+          <h3 className="text-xs font-bold uppercase text-text-main/30 mb-3 ml-1">À propos</h3>
+          <div className="bg-card-main rounded-2xl border border-border-main divide-y divide-border-main">
+            <button className="w-full flex items-center justify-between p-4 active:bg-card-main transition-colors">
               <div className="flex items-center gap-3">
-                <Info className="w-5 h-5 text-white/40" />
+                <Info className="w-5 h-5 text-text-main/40" />
                 <span>Version de l'application</span>
               </div>
-              <span className="text-white/30 text-sm">2.0.0</span>
+              <span className="text-text-main/30 text-sm">2.0.0</span>
             </button>
-            <button className="w-full flex items-center justify-between p-4 active:bg-white/5 transition-colors">
+            <button className="w-full flex items-center justify-between p-4 active:bg-card-main transition-colors">
               <div className="flex items-center gap-3">
-                <Shield className="w-5 h-5 text-white/40" />
+                <Shield className="w-5 h-5 text-text-main/40" />
                 <span>Confidentialité</span>
               </div>
             </button>

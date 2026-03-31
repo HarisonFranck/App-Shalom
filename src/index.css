@@ -2,8 +2,10 @@
 
 @theme {
   --color-primary: #ffd700;
-  --color-secondary: #212121;
-  --color-accent: #ffd700;
+  --color-bg-main: var(--bg-color);
+  --color-text-main: var(--text-color);
+  --color-card-main: var(--card-bg);
+  --color-border-main: var(--border-color);
   
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 }
@@ -23,32 +25,11 @@
 }
 
 @layer base {
-  body {
+  html, body {
     background-color: var(--bg-color);
     color: var(--text-color);
     @apply antialiased transition-colors duration-300;
   }
-}
-
-/* Utility classes for the new theme system */
-@utility bg-secondary {
-  background-color: var(--bg-color);
-}
-
-@utility text-white {
-  color: var(--text-color);
-}
-
-@utility bg-white\/5 {
-  background-color: var(--card-bg);
-}
-
-@utility border-white\/10 {
-  border-color: var(--border-color);
-}
-
-@utility border-white\/5 {
-  border-color: var(--border-color);
 }
 
 /* Slick Carousel Styles */
