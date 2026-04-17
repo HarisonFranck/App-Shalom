@@ -74,7 +74,7 @@ export function SettingsPage() {
       setErrorInfo({
         title: 'Tsy nandeha ny sync',
         message: err.message || 'Nisy olana kely tamin\'ny fampitambarana ny angona.',
-        type: err.message?.includes('internet') ? 'connection' : 'sync'
+        type: (err.message?.includes('internet') || err.message?.includes('fifandraisana')) ? 'connection' : 'sync'
       });
     } finally {
       setIsSyncing(false);
@@ -92,7 +92,7 @@ export function SettingsPage() {
       setErrorInfo({
         title: 'Tsy nandeha ny reset',
         message: err.message || 'Nisy olana kely tamin\'ny famerenana ny angona.',
-        type: err.message?.includes('internet') ? 'connection' : 'sync'
+        type: (err.message?.includes('internet') || err.message?.includes('fifandraisana')) ? 'connection' : 'sync'
       });
     } finally {
       setIsResetting(false);
@@ -295,11 +295,6 @@ export function SettingsPage() {
             </button>
           </div>
         </section>
-
-        <button className="w-full bg-red-500/10 text-red-500 p-4 rounded-2xl border border-red-500/20 flex items-center justify-center gap-2 font-bold active:scale-95 transition-transform">
-          <LogOut className="w-5 h-5" />
-          Déconnexion
-        </button>
       </div>
 
       <ConfirmationModal

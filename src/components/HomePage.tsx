@@ -21,37 +21,37 @@ export function HomePage() {
         title: "Matio 11:28",
         subtitle: "Mankanesa atỳ amiko, hianareo rehetra izay miasa fatratra sy mavesatra entana, fa Izaho no hanome anareo fitsaharana.",
         type: "Verset",
-        color: "bg-primary"
+        color: "bg-primary text-[#212121]"
       },
       {
         title: "Salamo 23:1",
         subtitle: "Jehovah no Mpiandry ahy; tsy hanan-java-mahory aho.",
         type: "Verset",
-        color: "bg-primary"
+        color: "bg-primary text-[#212121]"
       },
       {
         title: "Filipiana 4:13",
         subtitle: "Mahay ny zavatra rehetra aho ao amin'Ilay mampahery ahy.",
         type: "Verset",
-        color: "bg-primary"
+        color: "bg-primary text-[#212121]"
       },
       {
         title: "Jeremia 29:11",
         subtitle: "Fa Izaho mahalala ny hevitra eritreretiko ny aminareo, dia hevitra hahatonga fiadanana, fa tsy loza, mba hanome anareo fanantenana ny amin'ny farany.",
         type: "Verset",
-        color: "bg-primary"
+        color: "bg-primary text-[#212121]"
       },
       {
         title: "Salamo 121:1-2",
         subtitle: "Manandratra ny masoko ho amin'ny tendrombohitra aho; avy aiza ny famonjena ahy? Ny famonjena ahy dia avy amin'i Jehovah, Mpanao ny lanitra sy ny tany.",
         type: "Verset",
-        color: "bg-primary"
+        color: "bg-primary text-[#212121]"
       },
       {
         title: "Fampaherezana",
         subtitle: "Aza hadino ny mivavaka isan'andro. Ny vavaka no herin'ny mpino.",
         type: "Hafatra",
-        color: "bg-primary"
+        color: "bg-primary text-[#212121]"
       }
     ];
 
@@ -66,21 +66,21 @@ export function HomePage() {
           title: "Androany !",
           subtitle: `Hetsika: ${event.nom}. Manomboka izao !`,
           type: "Fampandrenesana",
-          color: "bg-red-500"
+          color: "bg-primary text-[#212121]"
         });
       } else if (isTomorrow(eventDate)) {
         slides.unshift({
           title: "Rahampitso !",
           subtitle: `Aza adino ny hetsika "${event.nom}" rahampitso.`,
           type: "Fampandrenesana",
-          color: "bg-orange-500"
+          color: "bg-card-main text-primary border-2 border-primary"
         });
       } else if (isWithinInterval(eventDate, { start: today, end: nextWeek })) {
         slides.push({
           title: "Amin'ity herinandro ity",
           subtitle: `Hetsika ho avy: "${event.nom}". Miomàna !`,
           type: "Fampandrenesana",
-          color: "bg-blue-500"
+          color: "bg-card-main text-text-main border border-border-main"
         });
       }
     });
@@ -93,7 +93,7 @@ export function HomePage() {
           title: "Tetikasa lehibe",
           subtitle: `Hanomboka tsy ho ela ny tetikasa "${project.nom}".`,
           type: "Tetikasa",
-          color: "bg-green-600"
+          color: "bg-card-main text-text-main border border-border-main"
         });
       }
     });
@@ -147,7 +147,7 @@ export function HomePage() {
         <Slider {...sliderSettings} className="rounded-3xl overflow-hidden shadow-2xl">
           {dynamicSlides.map((slide, i) => (
             <div key={i} className="relative h-64 outline-none">
-              <div className={cn("absolute inset-0 flex flex-col justify-center p-8 text-[#212121] transition-colors duration-500", slide.color || "bg-primary")}>
+              <div className={cn("absolute inset-0 flex flex-col justify-center p-8 transition-colors duration-500", slide.color || "bg-primary text-[#212121]")}>
                 <Quote className="w-12 h-12 opacity-10 absolute top-4 right-4" />
                 <div className="flex items-center gap-2 mb-2">
                   {slide.type === "Fampandrenesana" && <Bell className="w-3 h-3" />}

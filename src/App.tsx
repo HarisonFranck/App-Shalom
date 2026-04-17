@@ -12,6 +12,8 @@ import { AddPersonalSong } from './components/AddPersonalSong';
 import { PersonalSongsPage } from './components/PersonalSongsPage';
 import { PersonalSongDetailPage } from './components/PersonalSongDetailPage';
 import { SundayThemes } from './components/SundayThemes';
+import { MpamakyTenyPage } from './components/MpamakyTenyPage';
+import { MembersPage } from './components/MembersPage';
 import { FavoritesPage } from './components/FavoritesPage';
 import { FavoriteDetailPage } from './components/FavoriteDetailPage';
 import { EditFavoritePage } from './components/EditFavoritePage';
@@ -30,16 +32,16 @@ export default function App() {
       try {
         await syncData();
       } catch (err: any) {
-        console.error('Initial sync failed:', err);
-        // We don't necessarily show a modal on every app start failure to avoid annoying the user
-        // but we could show a subtle toast or just log it.
-        // For now, let's follow the user's request for "humble and clear" popups if sync fails.
-        if (err.message?.includes('internet')) {
+        // Log as warning instead of error for expected network issues
+        if (err.message?.includes('fifandraisana') || err.message?.includes('internet')) {
+          console.warn('Sync skipped due to network/connection issue:', err.message);
           setErrorInfo({
             title: 'Tsy nandeha ny sync',
-            message: 'Tsy afaka nampifanindry ny angona izahay satria tsy misy internet. Afaka mampiasa ny app offline ianao.',
+            message: 'Tsy afaka nampifanindry ny angona izahay satria tsy misy internet na ratsy ny fifandraisana. Afaka mampiasa ny app offline ianao.',
             type: 'connection'
           });
+        } else {
+          console.error('Initial sync failed:', err);
         }
       }
     };
@@ -65,6 +67,8 @@ export default function App() {
             <Route path="/personal-songs" element={<PersonalSongsPage />} />
             <Route path="/personal-songs/:id" element={<PersonalSongDetailPage />} />
             <Route path="/sunday-themes" element={<SundayThemes />} />
+            <Route path="/mpamaky-teny" element={<MpamakyTenyPage />} />
+            <Route path="/members" element={<MembersPage />} />
             <Route path="/favorites" element={<FavoritesPage />} />
             <Route path="/favorite-detail/:id" element={<FavoriteDetailPage />} />
             <Route path="/edit-favorite/:id" element={<EditFavoritePage />} />

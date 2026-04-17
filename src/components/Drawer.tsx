@@ -14,6 +14,7 @@ export function Drawer({ isOpen, onClose }: DrawerProps) {
     { icon: PlusCircle, label: 'Ajouter une chanson (Offline)', path: '/add-personal-song' },
     { icon: Music, label: 'Mes chansons (Tononkirako)', path: '/personal-songs' },
     { icon: CalendarDays, label: 'Lohahevitra Alahady', path: '/sunday-themes' },
+    { icon: BookOpen, label: 'Mpamaky Teny', path: '/mpamaky-teny' },
     { icon: Heart, label: 'Mes favoris', path: '/favorites' },
     { icon: User, label: 'Membres', path: '/members' },
     { icon: Settings, label: 'Paramètres', path: '/settings' },

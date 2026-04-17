@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { supabase, isSupabaseConfigured } from './supabase';
 import { db } from './db';
 
 const TABLES_TO_SYNC = [
@@ -6,13 +6,22 @@ const TABLES_TO_SYNC = [
   { name: 'evenement', pk: 'idevenement' },
   { name: 'projet', pk: 'idprojet' },
   { name: 'membre', pk: 'idmembre' },
+  { name: 'genre', pk: 'idgenre' },
+  { name: 'feo', pk: 'idfeo' },
   { name: 'lohahevitra', pk: 'idlohahevitra' },
   { name: 'verset', pk: 'idverset' },
   { name: 'lohahevitra_verset', pk: ['idlohahevitra', 'idverset'] },
-  { name: 'lohahevitravolana', pk: 'id' }
+  { name: 'lohahevitravolana', pk: 'id' },
+  { name: 'programme_type', pk: 'id' },
+  { name: 'lohahevitra_programme', pk: 'id' }
 ];
 
 export async function syncData() {
+  if (!isSupabaseConfigured) {
+    console.log('Supabase is not configured. Skipping sync.');
+    return;
+  }
+
   console.log('Starting sync...');
   
   if (!navigator.onLine) {
@@ -101,13 +110,18 @@ export async function syncData() {
 }
 
 export async function resetLohahevitra() {
+  if (!isSupabaseConfigured) {
+    console.log('Supabase is not configured. Skipping reset sync.');
+    return;
+  }
+
   if (!navigator.onLine) {
     throw new Error('Tsy misy fifandraisana internet. Mba jereo ny data na ny wifi anao alohan\'ny hamerenana ny angon-drakitra.');
   }
 
   try {
     console.log('Resetting Lohahevitra data...');
-    const tablesToClear = ['lohahevitra', 'lohahevitra_verset', 'lohahevitravolana', 'verset'];
+    const tablesToClear = ['lohahevitra', 'lohahevitra_verset', 'lohahevitravolana', 'verset', 'programme_type', 'lohahevitra_programme'];
     
     const tables = tablesToClear.map(t => db.table(t));
     await db.transaction('rw', [db.syncLogs, ...tables], async () => {

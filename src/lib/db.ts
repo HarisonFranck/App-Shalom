@@ -46,6 +46,17 @@ export interface Membre {
   idfeo: string;
   telephone: string;
   image: string;
+  password?: string;
+}
+
+export interface Genre {
+  idgenre: string;
+  nom: string;
+}
+
+export interface Feo {
+  idfeo: string;
+  nom: string;
 }
 
 export interface Lohahevitra {
@@ -100,17 +111,41 @@ export interface Tononkiratiana {
   tonony: string;
 }
 
+export interface ProgrammeType {
+  id: number;
+  code: string;
+  libelle: string;
+  created_at: string;
+}
+
+export interface LohahevitraProgramme {
+  id: string;
+  idlohahevitra: string;
+  idprogramme_type: number;
+  idverset?: string;
+  idmembre: string;
+  ordre?: number;
+  libelle_personnalise?: string;
+  note?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
 export class ShalomDatabase extends Dexie {
   tononkira!: Table<Tononkira>;
   evenement!: Table<Evenement>;
   projet!: Table<Projet>;
   membre!: Table<Membre>;
+  genre!: Table<Genre>;
+  feo!: Table<Feo>;
   lohahevitra!: Table<Lohahevitra>;
   tononkiraako!: Table<Tononkiraako>;
   tononkiratiana!: Table<Tononkiratiana>;
   verset!: Table<Verset>;
   lohahevitra_verset!: Table<LohahevitraVerset>;
   lohahevitravolana!: Table<LohahevitraVolana>;
+  programme_type!: Table<ProgrammeType>;
+  lohahevitra_programme!: Table<LohahevitraProgramme>;
   syncLogs!: Table<SyncLog>;
 
   constructor() {
@@ -119,7 +154,9 @@ export class ShalomDatabase extends Dexie {
       tononkira: 'idtononkira, titre, mpihira, tiana',
       evenement: 'idevenement, nom, date_debut',
       projet: 'idprojet, nom, date_debut',
-      membre: 'idmembre, nom, prenom',
+      membre: 'idmembre, nom, prenom, idgenre, idfeo',
+      genre: 'idgenre, nom',
+      feo: 'idfeo, nom',
       lohahevitra: 'idlohahevitra, nom, date, idlohahevitravolana',
       tononkiraako: '++id, titre, mpihira',
       tononkiratiana: '++id, titre, mpihira, idtononkira',
@@ -127,6 +164,10 @@ export class ShalomDatabase extends Dexie {
       lohahevitra_verset: '[idlohahevitra+idverset+type], idlohahevitra, idverset, type',
       lohahevitravolana: 'id',
       syncLogs: '++id, tableName'
+    });
+    this.version(2).stores({
+      programme_type: 'id, code',
+      lohahevitra_programme: 'id, idlohahevitra, idprogramme_type, idmembre'
     });
   }
 }

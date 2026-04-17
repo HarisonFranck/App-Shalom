@@ -10,14 +10,19 @@ export function SongsPage() {
   
   const songs = useLiveQuery(
     () => {
-      if (!search) return db.tononkira.toArray();
-      return db.tononkira
-        .filter(s => 
-          s.titre.toLowerCase().includes(search.toLowerCase()) || 
-          s.mpihira.toLowerCase().includes(search.toLowerCase()) ||
-          s.tonony.toLowerCase().includes(search.toLowerCase())
-        )
-        .toArray();
+      let query;
+      if (!search) {
+        query = db.tononkira.toArray();
+      } else {
+        query = db.tononkira
+          .filter(s => 
+            s.titre.toLowerCase().includes(search.toLowerCase()) || 
+            s.mpihira.toLowerCase().includes(search.toLowerCase()) ||
+            s.tonony.toLowerCase().includes(search.toLowerCase())
+          )
+          .toArray();
+      }
+      return query.then(items => items.sort((a, b) => a.titre.localeCompare(b.titre)));
     },
     [search]
   );
