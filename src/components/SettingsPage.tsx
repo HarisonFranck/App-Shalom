@@ -42,7 +42,7 @@ export function SettingsPage() {
         setNotifPermission(Notification.permission);
       }
     };
-    
+
     checkPermission();
     fetchLogs();
   }, []);
@@ -102,9 +102,9 @@ export function SettingsPage() {
   const handleEnableNotifications = async () => {
     console.log('Requesting notification permission...');
     setNotifError(null);
-    
+
     const isNative = Capacitor.isNativePlatform();
-    
+
     if (!isNative && !('Notification' in window)) {
       console.warn('Notifications not supported in this browser');
       setNotifError("Navigateur non supporté");
@@ -120,10 +120,10 @@ export function SettingsPage() {
     try {
       const granted = await requestNotificationPermission();
       console.log('Permission result:', granted);
-      
+
       // Small delay to ensure permission is updated
       await new Promise(resolve => setTimeout(resolve, 100));
-      
+
       // Update state based on actual current permission
       if (isNative) {
         const { LocalNotifications } = await import('@capacitor/local-notifications');
@@ -132,7 +132,7 @@ export function SettingsPage() {
       } else {
         setNotifPermission(Notification.permission);
       }
-      
+
       if (granted) {
         checkUpcomingReminders();
       } else {
@@ -166,9 +166,8 @@ export function SettingsPage() {
                 <button
                   key={item.id}
                   onClick={() => setTheme(item.id as any)}
-                  className={`flex-1 flex flex-col items-center py-3 rounded-xl transition-all ${
-                    theme === item.id ? 'bg-primary text-[#212121] font-bold' : 'text-text-main/50'
-                  }`}
+                  className={`flex-1 flex flex-col items-center py-3 rounded-xl transition-all ${theme === item.id ? 'bg-primary text-[#212121] font-bold' : 'text-text-main/50'
+                    }`}
                 >
                   <item.icon className="w-5 h-5 mb-1" />
                   <span className="text-[10px]">{item.label}</span>
@@ -194,7 +193,7 @@ export function SettingsPage() {
               </div>
             </div>
             {notifPermission !== 'granted' && (
-              <button 
+              <button
                 onClick={handleEnableNotifications}
                 className="bg-primary text-[#212121] px-4 py-2 rounded-xl font-bold text-sm active:scale-95 transition-transform"
               >
@@ -217,7 +216,7 @@ export function SettingsPage() {
                 <p className="text-xs text-text-main/40">Activer le bouton de collage automatique</p>
               </div>
             </div>
-            <button 
+            <button
               onClick={() => setIsPasteEnabled(!isPasteEnabled)}
               className={cn(
                 "w-12 h-6 rounded-full relative transition-colors duration-200 ease-in-out",
@@ -246,7 +245,7 @@ export function SettingsPage() {
                   <p className="text-xs text-text-main/40">Dernière sync : {formatDate(lastSync)}</p>
                 </div>
               </div>
-              <button 
+              <button
                 onClick={handleSync}
                 disabled={isSyncing}
                 className="bg-primary text-[#212121] px-4 py-2 rounded-xl font-bold text-sm active:scale-95 transition-transform disabled:opacity-50"
@@ -265,7 +264,7 @@ export function SettingsPage() {
                   <p className="text-xs text-text-main/40">Dernier reset : {formatDate(lastReset)}</p>
                 </div>
               </div>
-              <button 
+              <button
                 onClick={() => setShowResetConfirm(true)}
                 disabled={isResetting}
                 className="bg-red-500 text-white px-4 py-2 rounded-xl font-bold text-sm active:scale-95 transition-transform disabled:opacity-50"
