@@ -2,18 +2,33 @@ import React, { useState, useMemo } from 'react';
 import Slider from 'react-slick';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/src/lib/db';
-import { Music, Calendar, ChevronRight, Menu, Quote, Bell, Info } from 'lucide-react';
+import { Music, Calendar, ChevronRight, Menu, Quote, Bell, Info, WifiOff } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { Drawer } from './Drawer';
 import { isToday, isTomorrow, isWithinInterval, addDays, startOfDay } from 'date-fns';
 import { cn } from '@/src/lib/utils';
+import { syncData } from '../lib/syncService';
 
 export function HomePage() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+  
   const recentSongs = useLiveQuery(() => db.tononkira.limit(5).toArray());
   const upcomingEvents = useLiveQuery(() => db.evenement.toArray());
   const upcomingProjects = useLiveQuery(() => db.projet.toArray());
+  const totalSongsCount = useLiveQuery(() => db.tononkira.count());
+
+  const handleManualSync = async () => {
+    setIsSyncing(true);
+    try {
+      await syncData();
+    } catch (e) {
+      console.warn("Sync still failed", e);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   const dynamicSlides = useMemo(() => {
     const slides = [
@@ -141,6 +156,37 @@ export function HomePage() {
           <Menu className="w-6 h-6" />
         </button>
       </header>
+
+      {/* Offline Humble Hint Message */}
+      {totalSongsCount === 0 && (
+        <div className="px-4 mb-8">
+          <div className="bg-primary/10 border border-primary/20 rounded-2xl p-5 flex items-start gap-4 shadow-sm shadow-primary/5">
+            <div className="bg-primary/20 p-2 rounded-full shrink-0">
+              <WifiOff className="w-5 h-5 text-primary" />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-bold text-primary mb-1">Mbola tsy misy angona</h3>
+              <p className="text-sm text-text-main/70 mb-3 leading-relaxed">
+                Salama! Tsikaritra fa mbola tsy misy hira na fandaharana ato amin'ny findainao. Tsara raha mampirehitra Internet ou Wifi kely ianao voalohany mba hakana ireo angona vaovao rehetra avy ao amin'ny Shalom. 
+              </p>
+              <button 
+                onClick={handleManualSync}
+                disabled={isSyncing}
+                className="w-full bg-primary text-[#212121] font-bold py-2.5 rounded-xl active:scale-[0.98] transition-transform disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {isSyncing ? (
+                  <>
+                    <div className="animate-spin w-4 h-4 border-2 border-[#212121] border-t-transparent rounded-full" />
+                    Manavao...
+                  </>
+                ) : (
+                  "Hameno ny angona izao"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Hero Carousel */}
       <section className="mb-8 px-4">

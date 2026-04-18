@@ -21,6 +21,9 @@ export function ProjectsPage() {
                 alt={project.nom} 
                 className="w-full h-48 object-cover"
                 referrerPolicy="no-referrer"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
               />
             )}
             <div className="p-5">

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/src/lib/db';
 import { ChevronLeft, BookOpen, Quote, Calendar, Filter } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { isToday, isSameDay, startOfDay, differenceInDays, parseISO } from 'date-fns';
 import { cn } from '@/src/lib/utils';
@@ -46,9 +46,10 @@ export function SundayThemes() {
     });
   }, [search, dateFilter]);
 
-  const [selectedThemeId, setSelectedThemeId] = useState<string | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const selectedThemeId = searchParams.get('themeId');
 
-  const selectedTheme = themes?.find(t => t.idlohahevitra === selectedThemeId);
+  const selectedTheme = themes?.find(t => String(t.idlohahevitra) === String(selectedThemeId));
   
   const monthlyTheme = useLiveQuery(async () => {
     if (!selectedTheme?.idlohahevitravolana) return null;
@@ -90,10 +91,18 @@ export function SundayThemes() {
     tertiary: versesWithType?.filter(v => v.type === 'tertiary') || [],
   };
 
+  const goBack = () => {
+    if (selectedThemeId) {
+      navigate(-1);
+    } else {
+      navigate(-1);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-bg-main pb-10">
       <header className="sticky top-0 bg-bg-main/80 backdrop-blur-md z-10 px-4 py-4 flex items-center gap-4 border-b border-border-main">
-        <button onClick={() => navigate(-1)} className="p-2 -ml-2">
+        <button onClick={goBack} className="p-2 -ml-2">
           <ChevronLeft className="w-6 h-6" />
         </button>
         <h1 className="font-bold">Lohahevitra Alahady</h1>
@@ -198,7 +207,7 @@ export function SundayThemes() {
               return (
                 <motion.button
                   key={theme.idlohahevitra}
-                  onClick={() => setSelectedThemeId(theme.idlohahevitra)}
+                  onClick={() => setSearchParams({ themeId: String(theme.idlohahevitra) })}
                   className={cn(
                     "w-full text-left p-4 rounded-2xl border transition-all flex items-center gap-4 active:scale-[0.98]",
                     isTodayTheme 
@@ -234,7 +243,7 @@ export function SundayThemes() {
           /* Theme Detail & Verses */
           <div className="space-y-6">
             <button 
-              onClick={() => setSelectedThemeId(null)}
+              onClick={goBack}
               className="text-primary text-xs font-bold uppercase flex items-center gap-1"
             >
               <ChevronLeft className="w-4 h-4" /> Retour à la liste

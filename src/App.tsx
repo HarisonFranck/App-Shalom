@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './components/ThemeProvider';
 import { BottomNav } from './components/BottomNav';
 import { HomePage } from './components/HomePage';
@@ -35,11 +35,8 @@ export default function App() {
         // Log as warning instead of error for expected network issues
         if (err.message?.includes('fifandraisana') || err.message?.includes('internet')) {
           console.warn('Sync skipped due to network/connection issue:', err.message);
-          setErrorInfo({
-            title: 'Tsy nandeha ny sync',
-            message: 'Tsy afaka nampifanindry ny angona izahay satria tsy misy internet na ratsy ny fifandraisana. Afaka mampiasa ny app offline ianao.',
-            type: 'connection'
-          });
+          // We intentionally do not block the UI with an error. 
+          // The Home page will politely ask to sync if the DB is empty.
         } else {
           console.error('Initial sync failed:', err);
         }

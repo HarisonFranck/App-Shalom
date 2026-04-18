@@ -88,6 +88,37 @@ export async function checkUpcomingReminders() {
     }
   }
 
+  // Check Mpamaky Teny (Bible reading turns)
+  const allThemes = await db.lohahevitra.toArray();
+  const allProgs = await db.lohahevitra_programme.toArray();
+  
+  // Find which themes have assigned members
+  const themesWithProgs = new Set(allProgs.map(p => String(p.idlohahevitra)));
+  
+  for (const theme of allThemes) {
+    if (!themesWithProgs.has(String(theme.idlohahevitra))) continue;
+
+    // We use strict matching because date comes with weird TZ
+    const m = theme.date.match(/(\d{4})[-/.](\d{2})[-/.](\d{2})/);
+    if (!m) continue;
+    const themeTargetDate = new Date(`${m[1]}-${m[2]}-${m[3]}T00:00:00`);
+    
+    // Check if it's within the next 7 days, e.g., the upcoming Sunday
+    const daysUntil = (startOfDay(themeTargetDate).getTime() - startOfDay(now).getTime()) / (1000 * 60 * 60 * 24);
+    
+    if (daysUntil >= 0 && daysUntil <= 6) { // It's coming up this week!
+      const mpamakyId = `mpamaky_teny_${theme.idlohahevitra}`;
+      const lastNotified = localStorage.getItem(`notified_${mpamakyId}`);
+      const weekStr = `${now.getFullYear()}_${now.getMonth()}_week_${Math.floor(now.getDate() / 7)}`;
+      
+      // Warn once per week per event to avoid spamming everyday
+      if (lastNotified !== weekStr) {
+        showNotification('Anjara Mpamaky Teny!', `Aza adinoina fa ny Alahady izao dia anjarantsika (Shalom) ny mamaky ny Tenin'Andriamanitra sy mivavaka.`);
+        localStorage.setItem(`notified_${mpamakyId}`, weekStr);
+      }
+    }
+  }
+
   // Check Projects
   const projects = await db.projet.toArray();
   for (const project of projects) {

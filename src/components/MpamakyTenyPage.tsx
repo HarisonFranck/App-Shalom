@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/src/lib/db';
 import { ChevronLeft, BookOpen, Quote, Calendar, Filter, User } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { isToday, isSameDay, startOfDay, differenceInDays, parseISO } from 'date-fns';
 import { cn } from '@/src/lib/utils';
@@ -87,16 +87,27 @@ export function MpamakyTenyPage() {
     };
   }, [search, dateFilter]);
 
-  const [selectedThemeId, setSelectedThemeId] = useState<string | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const selectedThemeId = searchParams.get('themeId');
   const selectedTheme = data?.themes?.find(t => String(t.idlohahevitra) === String(selectedThemeId));
   const programmes = selectedThemeId ? data?.progsByTheme?.get(String(selectedThemeId)) || [] : undefined;
 
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
 
+  // Intercept the back button when a theme is open
+  const goBack = () => {
+    if (selectedThemeId) {
+      // Return to list by removing the search param (triggers popstate equivalent)
+      navigate(-1);
+    } else {
+      navigate(-1);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-bg-main pb-10">
       <header className="sticky top-0 bg-bg-main/80 backdrop-blur-md z-10 px-4 py-4 flex items-center gap-4 border-b border-border-main">
-        <button onClick={() => navigate(-1)} className="p-2 -ml-2">
+        <button onClick={goBack} className="p-2 -ml-2">
           <ChevronLeft className="w-6 h-6" />
         </button>
         <h1 className="font-bold">Mpamaky Teny</h1>
@@ -199,7 +210,10 @@ export function MpamakyTenyPage() {
                   const showMonthHeader = monthName !== prevMonthName;
 
                   const activeProgs = data?.progsByTheme?.get(String(theme.idlohahevitra)) || [];
-                  const userPics = activeProgs.slice(0, 3).map((p: any) => p.membre?.image).filter(Boolean);
+                  const userPicsData = activeProgs.slice(0, 3).filter((p: any) => p.membre?.image).map((p: any) => ({
+                    url: p.membre?.image as string,
+                    id: String(p.membre?.idmembre)
+                  }));
 
                   return (
                     <React.Fragment key={theme.idlohahevitra}>
@@ -211,7 +225,7 @@ export function MpamakyTenyPage() {
                         </div>
                       )}
                       <motion.button
-                        onClick={() => setSelectedThemeId(String(theme.idlohahevitra))}
+                        onClick={() => setSearchParams({ themeId: String(theme.idlohahevitra) })}
                         className={cn(
                           "w-full text-left p-4 rounded-2xl border transition-all flex items-center gap-4 active:scale-[0.98]",
                           isTodayTheme 
@@ -244,11 +258,21 @@ export function MpamakyTenyPage() {
                           </p>
                         </div>
                         
-                        {userPics.length > 0 && (
+                        {userPicsData.length > 0 && (
                            <div className="flex -space-x-2 shrink-0 border border-border-main/50 rounded-full p-0.5 bg-bg-main">
-                             {userPics.map((pic: string, i: number) => (
-                                <div key={i} className="w-7 h-7 rounded-full border border-bg-main overflow-hidden bg-primary/20">
-                                  <img src={pic} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                             {userPicsData.map((picData, i: number) => (
+                                <div key={i} className="w-7 h-7 rounded-full border border-bg-main overflow-hidden bg-primary/20 flex items-center justify-center">
+                                  {!failedImages.has(picData.id) ? (
+                                    <img 
+                                      src={picData.url} 
+                                      alt="" 
+                                      className="w-full h-full object-cover" 
+                                      referrerPolicy="no-referrer"
+                                      onError={() => setFailedImages(prev => new Set(prev).add(picData.id))}
+                                    />
+                                  ) : (
+                                    <User className="w-4 h-4 text-primary" />
+                                  )}
                                 </div>
                              ))}
                            </div>
@@ -263,7 +287,7 @@ export function MpamakyTenyPage() {
         ) : (
           <div className="space-y-6">
             <button 
-              onClick={() => setSelectedThemeId(null)}
+              onClick={goBack}
               className="text-primary text-xs font-bold uppercase flex items-center gap-1"
             >
               <ChevronLeft className="w-4 h-4" /> Retour à la liste
